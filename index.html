@@ -53,6 +53,7 @@
     width:34px;height:34px;border-radius:12px;display:grid;place-items:center;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     color:#05070f;
+    font-weight:950;
   }
   nav{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-weight:700;font-size:14px}
   nav a{padding:8px 10px;border-radius:999px}
@@ -140,14 +141,21 @@
     background:rgba(255,255,255,.05);color:var(--text);
     cursor:pointer;font-weight:900;font-size:12px;
   }
-  .details{
-    margin-top:10px;
-    padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.05);
+
+  /* FULL-WIDTH EXPANDED INSIGHT ROW */
+  .expand-row td{padding:0;border-bottom:none}
+  .expand-panel{
+    width:100%;
+    padding:18px 20px;
+    border-top:1px solid var(--line);
+    background:rgba(0,0,0,.35);
   }
-  .details b{display:block;margin-bottom:4px}
-  .newslist{margin:8px 0 0 16px;padding:0}
-  .newslist li{margin:6px 0;color:var(--muted);font-size:13px}
+  .expand-panel b{display:block;margin-bottom:6px;font-size:14px}
+  .expand-panel .ai-text{
+    font-size:15px;line-height:1.55;max-width:95ch;
+  }
+  .newslist{margin:10px 0 0 18px;padding:0}
+  .newslist li{margin:8px 0;color:var(--muted);font-size:14px}
   .newslist a{color:var(--accent)}
   .news-card{display:grid;gap:10px}
   .news-item{
@@ -170,41 +178,6 @@
     color:rgba(255,255,255,.55);font-size:13px;
     display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;
   }
-
-  /* FULL-WIDTH EXPANDED INSIGHT ROW */
-.expand-row td {
-  padding: 0;
-  border-bottom: none;
-}
-
-.expand-panel {
-  width: 100%;
-  padding: 18px 20px;
-  border-top: 1px solid var(--line);
-  background: rgba(0,0,0,.35);
-}
-
-.expand-panel b {
-  font-size: 14px;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.expand-panel .ai-text {
-  font-size: 15px;
-  line-height: 1.55;
-  max-width: 95ch;
-}
-
-.expand-panel .newslist {
-  margin-top: 10px;
-}
-
-.expand-panel .newslist li {
-  margin: 8px 0;
-  font-size: 14px;
-}
-
 </style>
 </head>
 
@@ -361,7 +334,7 @@
    DATA MODELS
    ============ */
 
-// Demo watchlist (add/remove freely)
+// Demo watchlist (edit freely). News links are real URLs (open in new tab).
 const watchlist = [
   {
     t:"NVDA", name:"NVIDIA", group:"Designers", theme:"AI accelerators, networking, HBM attach",
@@ -369,7 +342,7 @@ const watchlist = [
     aiInsight:"AI demand remains strong; watch HBM supply + advanced packaging throughput as near-term shipment governors.",
     links:[
       {title:"AI runs on capital: investors reward hardware makers (Feb 6, 2026)", src:"Reuters", url:"https://www.reuters.com/technology/spacex-nvidia-deals-showing-ai-runs-capital-2026-02-06/"},
-      {title:"TSMC needs to work hard to meet AI demand (Feb 2026)", src:"Tom's Hardware", url:"https://www.tomshardware.com/tech-industry/artificial-intelligence/jensen-huang-warns-tsmc-needs-to-work-very-hard-to-meet-ai-demand-nvidia-ceo-says-its-demand-alone-may-force-doubling-its-capacity-over-the-next-decade"}
+      {title:"Huang warns TSMC must work hard to meet AI demand (Feb 2026)", src:"Tom's Hardware", url:"https://www.tomshardware.com/tech-industry/artificial-intelligence/jensen-huang-warns-tsmc-needs-to-work-very-hard-to-meet-ai-demand-nvidia-ceo-says-its-demand-alone-may-force-doubling-its-capacity-over-the-next-decade"}
     ]
   },
   {
@@ -377,7 +350,7 @@ const watchlist = [
     chg:-0.4,
     aiInsight:"Multiple-supplier AI stacks can diversify share; monitor hyperscaler/enterprise adoption and MI-series cadence.",
     links:[
-      {title:"Semiconductor stocks rise with AI spending focus (Feb 2026)", src:"Reuters", url:"https://www.reuters.com/business/futures-stabilize-after-tech-rout-amazon-slides-ai-capex-lift-2026-02-06/"}
+      {title:"Futures stabilize after tech rout; AI capex in focus (Feb 6, 2026)", src:"Reuters", url:"https://www.reuters.com/business/futures-stabilize-after-tech-rout-amazon-slides-ai-capex-lift-2026-02-06/"}
     ]
   },
   {
@@ -385,8 +358,8 @@ const watchlist = [
     chg:+0.3,
     aiInsight:"Leading-edge demand strong; CoWoS/advanced packaging capacity expansion is a key bottleneck for AI output.",
     links:[
-      {title:"Why TSM’s packaging capacity matters for AI scaling (Jan 3, 2026)", src:"Yahoo Finance", url:"https://finance.yahoo.com/news/why-taiwan-semiconductor-manufacturing-holds-151024917.html"},
-      {title:"CoWoS capacity ramp and constraints (Jan 27, 2026)", src:"Wedbush", url:"https://investor.wedbush.com/wedbush/article/tokenring-2026-1-27-the-cowos-stranglehold-tsmc-ramps-advanced-packaging-as-ai-demand-outpaces-the-physics-of-supply"}
+      {title:"Why TSM holds the key to AI scaling (Jan 3, 2026)", src:"Yahoo Finance", url:"https://finance.yahoo.com/news/why-taiwan-semiconductor-manufacturing-holds-151024917.html"},
+      {title:"The CoWoS stranglehold: advanced packaging ramps (Jan 27, 2026)", src:"Wedbush", url:"https://investor.wedbush.com/wedbush/article/tokenring-2026-1-27-the-cowos-stranglehold-tsmc-ramps-advanced-packaging-as-ai-demand-outpaces-the-physics-of-supply"}
     ]
   },
   {
@@ -395,7 +368,7 @@ const watchlist = [
     aiInsight:"EUV demand is structurally supported by advanced logic/memory; watch bookings volatility and China exposure.",
     links:[
       {title:"What 2026 has in store for ASML (Jan 9, 2026)", src:"Forbes", url:"https://www.forbes.com/sites/greatspeculations/2026/01/09/what-2026-has-in-store-for-asml-high-na-euv-dram/"},
-      {title:"ASML EUV demand outlook & memory tailwinds (Jan 28, 2026)", src:"TrendForce", url:"https://www.trendforce.com/news/2026/01/28/news-asml-posts-record-e9-7b-q4-revenue-memory-shortage-reportedly-may-boost-euv-tool-demand/"}
+      {title:"ASML posts record revenue; memory shortage may boost EUV demand (Jan 28, 2026)", src:"TrendForce", url:"https://www.trendforce.com/news/2026/01/28/news-asml-posts-record-e9-7b-q4-revenue-memory-shortage-reportedly-may-boost-euv-tool-demand/"}
     ]
   },
   {
@@ -403,7 +376,7 @@ const watchlist = [
     chg:+0.5,
     aiInsight:"AI capex supports leading-edge logic and packaging-related demand; watch memory tool cycle inflections.",
     links:[
-      {title:"Chipmaker shares gain as AI datacenter demand wave continues (Jan 28, 2026)", src:"Reuters", url:"https://www.reuters.com/business/texas-instruments-shares-jump-first-quarter-outlook-signals-robust-ai-data-2026-01-28/"}
+      {title:"Chipmaker shares gain as AI data demand persists (Jan 28, 2026)", src:"Reuters", url:"https://www.reuters.com/business/texas-instruments-shares-jump-first-quarter-outlook-signals-robust-ai-data-2026-01-28/"}
     ]
   },
   {
@@ -411,7 +384,7 @@ const watchlist = [
     chg:-0.2,
     aiInsight:"Memory exposure can add cyclicality; pay attention to HBM-driven DRAM capex and NAND discipline.",
     links:[
-      {title:"2026 semiconductor industry outlook (Feb 2026)", src:"Deloitte", url:"https://www.deloitte.com/us/en/insights/industry/technology/technology-media-telecom-outlooks/semiconductor-industry-outlook.html"}
+      {title:"2026 global semiconductor industry outlook (Feb 2026)", src:"Deloitte", url:"https://www.deloitte.com/us/en/insights/industry/technology/technology-media-telecom-outlooks/semiconductor-industry-outlook.html"}
     ]
   },
   {
@@ -437,7 +410,7 @@ const sectorNews = [
   {
     src:"Reuters",
     title:"AI runs on capital: investors reward hardware makers (Feb 6, 2026)",
-    meta:"Semiconductor stocks have surged alongside AI hardware demand; software lagged.",
+    meta:"Hardware-linked names have outperformed as AI buildout accelerates.",
     url:"https://www.reuters.com/technology/spacex-nvidia-deals-showing-ai-runs-capital-2026-02-06/"
   },
   {
@@ -489,7 +462,6 @@ function smoothTo(id){
   const el = document.getElementById(id);
   if(el) el.scrollIntoView({behavior:"smooth"});
 }
-
 function esc(s){
   return String(s).replace(/[&<>"']/g, m => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -519,10 +491,11 @@ function renderWatchlist(){
     return inGroup && inQuery;
   });
 
+  // Build rows + FULL-WIDTH expandable panel row under each item
   rowsEl.innerHTML = filtered.length ? filtered.map((d, idx) => {
     const sign = d.chg >= 0 ? "+" : "";
     const chgCls = d.chg >= 0 ? "up" : "down";
-    const detailId = `detail_${d.t}_${idx}`;
+    const expandId = `expand_${d.t}_${idx}`;
 
     const linksHtml = (d.links || []).map(l =>
       `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a> <span class="muted">· ${esc(l.src)}</span></li>`
@@ -536,39 +509,47 @@ function renderWatchlist(){
         <td class="muted">${esc(d.theme)}</td>
         <td class="chg ${chgCls}">${sign}${Number(d.chg).toFixed(1)}%</td>
         <td>
-  <button class="rowbtn" data-toggle="${detailId}">View</button>
-</td>
-</tr>
+          <button class="rowbtn" data-toggle="${expandId}">View</button>
+        </td>
+      </tr>
 
-<tr class="expand-row" id="${detailId}" style="display:none;">
-  <td colspan="6">
-    <div class="expand-panel">
-      <b>AI insight</b>
-      <div class="ai-text muted">${esc(d.aiInsight)}</div>
+      <tr class="expand-row" id="${expandId}" style="display:none;">
+        <td colspan="6">
+          <div class="expand-panel">
+            <b>AI insight</b>
+            <div class="ai-text muted">${esc(d.aiInsight)}</div>
 
-      <b style="margin-top:12px;">Relevant news</b>
-      <ul class="newslist">
-        ${linksHtml || `<li class="muted">No links yet.</li>`}
-      </ul>
-    </div>
-  </td>
-</tr>
+            <b style="margin-top:12px;">Relevant news</b>
+            <ul class="newslist">
+              ${linksHtml || `<li class="muted">No links yet.</li>`}
+            </ul>
+          </div>
+        </td>
+      </tr>
     `;
   }).join("") : `
     <tr><td colspan="6" class="muted" style="padding:18px;">No matches. Try “HBM”, “EUV”, “CoWoS”, “capex”, “China”.</td></tr>
   `;
 
-  // bind expand/collapse buttons after render
+  // Bind expand/collapse (after rendering)
   document.querySelectorAll("[data-toggle]").forEach(btn => {
     btn.addEventListener("click", () => {
-      const panel = document.getElementById(id);
-      const isOpen = panel && panel.style.display === "table-row";
-      panel.style.display = isOpen ? "none" : "table-row";
-      btn.textContent = isOpen ? "View" : "Hide";
+      const id = btn.getAttribute("data-toggle");
+      const panelRow = document.getElementById(id);
+      const isOpen = panelRow && panelRow.style.display === "table-row";
 
-      const isOpen = panel && panel.style.display !== "none";
-      if(panel) panel.style.display = isOpen ? "none" : "block";
-      btn.textContent = isOpen ? "View" : "Hide";
+      // (Optional) close all others so only one open at a time
+      document.querySelectorAll(".expand-row").forEach(r => r.style.display = "none");
+      document.querySelectorAll("[data-toggle]").forEach(b => b.textContent = "View");
+
+      if(panelRow){
+        panelRow.style.display = isOpen ? "none" : "table-row";
+        btn.textContent = isOpen ? "View" : "Hide";
+        if(!isOpen){
+          // scroll slightly to keep the expanded panel visible
+          panelRow.scrollIntoView({behavior:"smooth", block:"nearest"});
+        }
+      }
     });
   });
 }
@@ -590,9 +571,7 @@ clearBtn.addEventListener("click", () => {
   qEl.focus();
 });
 
-groupChips.forEach(chip => {
-  chip.addEventListener("click", () => setActiveChip(chip.dataset.group));
-});
+groupChips.forEach(chip => chip.addEventListener("click", () => setActiveChip(chip.dataset.group)));
 
 quickChips.forEach(chip => {
   chip.addEventListener("click", () => {
@@ -603,7 +582,7 @@ quickChips.forEach(chip => {
   });
 });
 
-// Smooth scrolling for nav anchors
+// Smooth scrolling for anchor links
 document.querySelectorAll("a[href^='#']").forEach(a => {
   a.addEventListener("click", e => {
     const href = a.getAttribute("href");
