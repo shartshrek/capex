@@ -4,344 +4,605 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>SemiPulse — Semiconductor Stock Insights</title>
+<meta name="description" content="Watchlist + AI insights + curated news links for semiconductor stocks." />
 
-<!-- =======================
-        CSS (INLINE)
-======================== -->
 <style>
-:root {
-  --bg: #0b1220;
-  --panel: rgba(255,255,255,.06);
-  --text: rgba(255,255,255,.92);
-  --muted: rgba(255,255,255,.65);
-  --line: rgba(255,255,255,.12);
-  --accent: #7c9cff;
-  --accent2: #3ce6c2;
-  --up: #6cf2a9;
-  --down: #ff6b6b;
-  --radius: 16px;
-}
-
-.alt-theme {
-  --bg: #05070f;
-  --accent: #a78bfa;
-  --accent2: #22d3ee;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  background: var(--bg);
-  color: var(--text);
-}
-
-a { color: inherit; text-decoration: none; }
-
-.wrap {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 18px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(0,0,0,.2);
-}
-
-nav a {
-  margin-right: 14px;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-nav a:hover { color: var(--text); }
-
-button {
-  border: 1px solid var(--line);
-  background: rgba(255,255,255,.06);
-  color: var(--text);
-  padding: 8px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-button.primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border: none;
-  color: black;
-}
-
-section {
-  margin-top: 22px;
-  padding: 20px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--panel);
-}
-
-h1, h2 { margin-top: 0; }
-
-input {
-  padding: 10px;
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: rgba(0,0,0,.2);
-  color: var(--text);
-}
-
-.chips span {
-  display: inline-block;
-  margin: 4px 6px 0 0;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.chips span.active {
-  background: var(--accent);
-  color: black;
-  border: none;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 12px;
-}
-
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-}
-
-.up { color: var(--up); font-weight: 800; }
-.down { color: var(--down); font-weight: 800; }
-
-footer {
-  margin: 30px 0;
-  font-size: 13px;
-  color: var(--muted);
-  text-align: center;
-}
+  :root{
+    --bg:#0b1220;
+    --panel:rgba(255,255,255,.06);
+    --panel2:rgba(255,255,255,.08);
+    --text:rgba(255,255,255,.92);
+    --muted:rgba(255,255,255,.66);
+    --line:rgba(255,255,255,.12);
+    --accent:#7c9cff;
+    --accent2:#3ce6c2;
+    --up:#6cf2a9;
+    --down:#ff6b6b;
+    --warn:#ffd166;
+    --radius:16px;
+    --shadow:0 10px 28px rgba(0,0,0,.35);
+    --max:1100px;
+  }
+  body.alt-theme{
+    --bg:#070b14;
+    --accent:#a78bfa;
+    --accent2:#22d3ee;
+    --panel:rgba(255,255,255,.07);
+    --panel2:rgba(255,255,255,.09);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    background:
+      radial-gradient(1200px 700px at 15% 10%, rgba(124,156,255,.18), transparent 55%),
+      radial-gradient(900px 600px at 85% 20%, rgba(60,230,194,.14), transparent 55%),
+      var(--bg);
+    color:var(--text);
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--max);margin:0 auto;padding:20px}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    padding:12px 14px;border:1px solid var(--line);border-radius:999px;
+    background:rgba(0,0,0,.18);backdrop-filter:blur(10px);box-shadow:var(--shadow);
+    position:sticky;top:12px;z-index:10;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+  .logo{
+    width:34px;height:34px;border-radius:12px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#05070f;
+  }
+  nav{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-weight:700;font-size:14px}
+  nav a{padding:8px 10px;border-radius:999px}
+  nav a:hover{background:rgba(255,255,255,.06);color:var(--text)}
+  .btn{
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.06);
+    color:var(--text);
+    padding:9px 12px;border-radius:999px;
+    font-weight:900;font-size:14px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:transform .12s ease, background .12s ease, border-color .12s ease;
+  }
+  .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.18)}
+  .btn.primary{
+    border-color:rgba(124,156,255,.45);
+    background:linear-gradient(135deg, rgba(124,156,255,.28), rgba(60,230,194,.18));
+  }
+  .grid{display:grid;grid-template-columns:1.3fr .7fr;gap:16px;margin-top:16px}
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+  .card{
+    border:1px solid var(--line);
+    background:var(--panel);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .card .inner{padding:18px}
+  h1{margin:8px 0 8px;font-size:clamp(26px,3.2vw,40px);letter-spacing:-.02em;line-height:1.05}
+  h2{margin:0 0 10px;font-size:18px}
+  .muted{color:var(--muted)}
+  .kicker{color:var(--muted);font-weight:900;letter-spacing:.18em;text-transform:uppercase;font-size:12px}
+  .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .pill{
+    border:1px solid var(--line);
+    background:rgba(0,0,0,.12);
+    padding:8px 10px;border-radius:999px;font-size:13px;color:var(--muted);
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .dot{width:8px;height:8px;border-radius:99px;background:var(--accent2)}
+  .section-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+  .section-title .hint{font-size:13px;color:var(--muted)}
+  .input-row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 12px}
+  input{
+    flex:1;min-width:240px;
+    padding:11px 12px;border-radius:12px;border:1px solid var(--line);
+    background:rgba(0,0,0,.16);color:var(--text);outline:none;
+  }
+  input::placeholder{color:rgba(255,255,255,.45)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .chip{
+    padding:8px 10px;border-radius:999px;border:1px solid var(--line);
+    background:rgba(255,255,255,.05);color:var(--muted);
+    cursor:pointer;font-weight:900;font-size:12px;user-select:none;
+  }
+  .chip.active{
+    color:var(--text);
+    border-color:rgba(124,156,255,.55);
+    background:rgba(124,156,255,.18);
+  }
+  .table{
+    width:100%;border-collapse:collapse;border-radius:16px;overflow:hidden;
+    border:1px solid var(--line);background:rgba(0,0,0,.12);
+  }
+  th,td{padding:12px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:14px;vertical-align:top}
+  th{
+    color:rgba(255,255,255,.78);
+    font-weight:900;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    background:rgba(255,255,255,.04);
+  }
+  .ticker{font-weight:950;letter-spacing:.03em}
+  .tag{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:5px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.06);font-size:12px;color:rgba(255,255,255,.78);
+    white-space:nowrap;
+  }
+  .chg{font-weight:950}
+  .up{color:var(--up)}
+  .down{color:var(--down)}
+  .rowbtn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+    background:rgba(255,255,255,.05);color:var(--text);
+    cursor:pointer;font-weight:900;font-size:12px;
+  }
+  .details{
+    margin-top:10px;
+    padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+  }
+  .details b{display:block;margin-bottom:4px}
+  .newslist{margin:8px 0 0 16px;padding:0}
+  .newslist li{margin:6px 0;color:var(--muted);font-size:13px}
+  .newslist a{color:var(--accent)}
+  .news-card{display:grid;gap:10px}
+  .news-item{
+    border:1px solid var(--line);background:rgba(0,0,0,.12);
+    border-radius:16px;padding:12px;
+  }
+  .news-item .src{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+  .news-item .ttl{margin:6px 0 0;font-weight:900}
+  .news-item .meta{margin:6px 0 0;color:var(--muted);font-size:13px}
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:6px 10px;border-radius:999px;
+    border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
+    font-weight:900;font-size:12px;color:var(--text);
+  }
+  .badge.warn{border-color:rgba(255,209,102,.35);background:rgba(255,209,102,.12)}
+  .badge.hot{border-color:rgba(60,230,194,.35);background:rgba(60,230,194,.10)}
+  footer{
+    margin:22px 0 10px;
+    color:rgba(255,255,255,.55);font-size:13px;
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;
+  }
 </style>
 </head>
 
 <body>
-<div class="wrap">
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">SP</div>
+        <div>SemiPulse <span class="muted" style="font-weight:900;">· AI + news</span></div>
+      </div>
 
-<header>
-  <strong>SemiPulse</strong>
-  <nav>
-    <a href="#watchlist">Watchlist</a>
-    <a href="#catalysts">Catalysts</a>
-    <a href="#newsletter">Newsletter</a>
-  </nav>
-  <div>
-    <button id="themeBtn">Theme</button>
-    <button class="primary" id="insightBtn">Get insights</button>
+      <nav aria-label="Primary">
+        <a href="#watchlist">Watchlist</a>
+        <a href="#sector">Sector pulse</a>
+        <a href="#newsletter">Newsletter</a>
+      </nav>
+
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn" id="themeBtn">◐ Theme</button>
+        <button class="btn primary" id="insightBtn">Get insights →</button>
+      </div>
+    </header>
+
+    <section class="card" style="margin-top:16px;">
+      <div class="inner">
+        <div class="kicker">Semiconductor stock intelligence</div>
+        <h1>Watchlist + AI insights + curated news links (single-file prototype)</h1>
+        <p class="muted" style="max-width:85ch;margin:0;">
+          This page uses a small built-in dataset and a curated news panel. Replace the links with your preferred sources,
+          or later wire this up to your own backend that fetches headlines + generates AI summaries.
+        </p>
+
+        <div class="hero-actions">
+          <button class="btn primary" id="goWatchlistBtn">Explore watchlist →</button>
+          <button class="btn" id="goSectorBtn">View sector pulse</button>
+          <button class="btn" id="simulateBtn">↻ Simulate “today” update</button>
+        </div>
+
+        <div class="pillrow" role="list" aria-label="Highlights">
+          <div class="pill" role="listitem"><span class="dot"></span> AI capex tailwind</div>
+          <div class="pill" role="listitem"><span class="dot" style="background:var(--accent)"></span> Packaging / HBM constraints</div>
+          <div class="pill" role="listitem"><span class="dot" style="background:var(--warn)"></span> Geopolitics / export controls</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+
+      <!-- WATCHLIST -->
+      <section class="card" id="watchlist">
+        <div class="inner">
+          <div class="section-title">
+            <h2>Watchlist</h2>
+            <span class="hint">Filter + expand rows for AI insight & news</span>
+          </div>
+
+          <div class="input-row">
+            <input id="q" placeholder="Search tickers, themes (HBM, EUV, CoWoS, China, capex)..." />
+            <button class="btn" id="clearBtn">Clear</button>
+          </div>
+
+          <div class="chips" aria-label="Group filters">
+            <span class="chip active" data-group="All">All</span>
+            <span class="chip" data-group="Designers">Designers</span>
+            <span class="chip" data-group="Foundries">Foundries</span>
+            <span class="chip" data-group="Equipment">Equipment</span>
+            <span class="chip" data-group="Memory">Memory</span>
+            <span class="chip" data-group="Packaging">Packaging</span>
+          </div>
+
+          <table class="table" aria-label="Semiconductor watchlist table">
+            <thead>
+              <tr>
+                <th style="width:90px;">Ticker</th>
+                <th>Company</th>
+                <th style="width:140px;">Group</th>
+                <th>Theme</th>
+                <th style="width:120px;">1D</th>
+                <th style="width:130px;">Insights</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+
+          <p class="muted" style="margin:10px 0 0;font-size:12px;">
+            Educational only — demo returns/insights. News links open in a new tab.
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTOR / NEWS PANEL -->
+      <aside class="card" id="sector">
+        <div class="inner">
+          <div class="section-title">
+            <h2>Sector pulse</h2>
+            <span class="hint">Curated links</span>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+            <span class="badge hot">AI hardware strength</span>
+            <span class="badge warn">HBM/packaging bottlenecks</span>
+            <span class="badge">Updated: <span id="asof"></span></span>
+          </div>
+
+          <p class="muted" style="margin:0 0 12px;">
+            Quick narrative (template): Stocks tend to react most to <b>capex commentary</b>, <b>shipment constraints</b>
+            (HBM / advanced packaging), and <b>tool order visibility</b> across logic vs memory.
+          </p>
+
+          <div class="news-card" id="newsPanel"></div>
+
+          <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px;">
+            <div class="kicker" style="margin-bottom:8px;">Quick chips</div>
+            <div class="chips" aria-label="Quick search chips" style="margin:0;">
+              <span class="chip" data-quick="AI capex">AI capex</span>
+              <span class="chip" data-quick="HBM">HBM</span>
+              <span class="chip" data-quick="CoWoS">CoWoS</span>
+              <span class="chip" data-quick="EUV">EUV</span>
+              <span class="chip" data-quick="China">China</span>
+            </div>
+            <p class="muted" style="margin:10px 0 0;font-size:12px;">
+              Click a chip to prefill the watchlist search.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- NEWSLETTER -->
+    <section class="card" id="newsletter" style="margin-top:16px;">
+      <div class="inner" style="display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center;">
+        <div style="min-width:260px;">
+          <div class="kicker">Weekly digest</div>
+          <h2 style="margin:8px 0 6px;">Get “what changed” notes every Friday</h2>
+          <p class="muted" style="margin:0;max-width:70ch;">
+            Demo form. Connect to your email provider or backend later.
+          </p>
+        </div>
+        <form id="newsletterForm" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <input id="email" type="email" required placeholder="you@example.com" aria-label="Email address" style="min-width:260px;">
+          <button class="btn primary" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+
+    <footer>
+      <div>© <span id="year"></span> SemiPulse</div>
+      <div>Educational content only. Not investment advice.</div>
+    </footer>
   </div>
-</header>
 
-<section>
-  <h1>Semiconductor Stock Intelligence</h1>
-  <p class="muted">
-    Designers, foundries, equipment, memory — filtered for AI & capex cycles.
-  </p>
-</section>
-
-<section id="watchlist">
-  <h2>Watchlist</h2>
-
-  <input id="search" placeholder="Search: AI, HBM, EUV, China, packaging…" />
-
-  <div class="chips" id="groupChips">
-    <span class="active" data-group="All">All</span>
-    <span data-group="Designers">Designers</span>
-    <span data-group="Foundries">Foundries</span>
-    <span data-group="Equipment">Equipment</span>
-    <span data-group="Memory">Memory</span>
-  </div>
-
-  <table>
-        <thead>
-          <tr>
-            <th>Ticker</th>
-            <th>Company</th>
-            <th>Group</th>
-            <th>Theme</th>
-            <th>AI Insight & News</th>
-            <th>1D</th>
-          </tr>
-        </thead>
-
-    <tbody id="rows"></tbody>
-  </table>
-</section>
-
-<section id="catalysts">
-  <h2>Catalysts</h2>
-  <ul>
-    <li>AI datacenter capex guidance</li>
-    <li>HBM & advanced packaging capacity</li>
-    <li>Foundry utilization and node mix</li>
-    <li>Export controls & China exposure</li>
-  </ul>
-</section>
-
-<section id="newsletter">
-  <h2>Weekly AI Capex Notes</h2>
-  <form id="newsletterForm">
-    <input id="email" placeholder="you@email.com" />
-    <br><br>
-    <button class="primary">Subscribe</button>
-  </form>
-</section>
-
-<footer>
-  © <span id="year"></span> SemiPulse · Educational use only
-</footer>
-
-</div>
-
-<!-- =======================
-        JAVASCRIPT
-======================== -->
 <script>
-const data = [
-<script>
-const data = [
+/* ============
+   DATA MODELS
+   ============ */
+
+// Demo watchlist (add/remove freely)
+const watchlist = [
   {
-    t: "NVDA",
-    name: "NVIDIA",
-    group: "Designers",
-    theme: "AI GPUs, HBM",
-    chg: 1.2,
-    aiInsight: "AI datacenter demand remains strong; near-term upside driven by HBM supply and networking attach rates.",
-    news: [
-      { title: "NVIDIA demand driven by hyperscaler AI spend", url: "https://www.reuters.com" },
-      { title: "HBM supply chain tightens amid AI boom", url: "https://www.bloomberg.com" }
+    t:"NVDA", name:"NVIDIA", group:"Designers", theme:"AI accelerators, networking, HBM attach",
+    chg:+1.2,
+    aiInsight:"AI demand remains strong; watch HBM supply + advanced packaging throughput as near-term shipment governors.",
+    links:[
+      {title:"AI runs on capital: investors reward hardware makers (Feb 6, 2026)", src:"Reuters", url:"https://www.reuters.com/technology/spacex-nvidia-deals-showing-ai-runs-capital-2026-02-06/"},
+      {title:"TSMC needs to work hard to meet AI demand (Feb 2026)", src:"Tom's Hardware", url:"https://www.tomshardware.com/tech-industry/artificial-intelligence/jensen-huang-warns-tsmc-needs-to-work-very-hard-to-meet-ai-demand-nvidia-ceo-says-its-demand-alone-may-force-doubling-its-capacity-over-the-next-decade"}
     ]
   },
   {
-    t: "TSM",
-    name: "TSMC",
-    group: "Foundries",
-    theme: "Leading-edge nodes",
-    chg: 0.3,
-    aiInsight: "Advanced node utilization improving; CoWoS capacity remains a key bottleneck for AI accelerators.",
-    news: [
-      { title: "TSMC sees stronger advanced-node demand", url: "https://www.reuters.com" },
-      { title: "Packaging capacity limits AI chip output", url: "https://www.wsj.com" }
+    t:"AMD", name:"AMD", group:"Designers", theme:"AI GPUs + CPUs; competitive positioning vs NVDA",
+    chg:-0.4,
+    aiInsight:"Multiple-supplier AI stacks can diversify share; monitor hyperscaler/enterprise adoption and MI-series cadence.",
+    links:[
+      {title:"Semiconductor stocks rise with AI spending focus (Feb 2026)", src:"Reuters", url:"https://www.reuters.com/business/futures-stabilize-after-tech-rout-amazon-slides-ai-capex-lift-2026-02-06/"}
     ]
   },
   {
-    t: "AMAT",
-    name: "Applied Materials",
-    group: "Equipment",
-    theme: "WFE, deposition",
-    chg: 0.5,
-    aiInsight: "Logic and advanced packaging orders offset memory tool softness; AI capex remains supportive.",
-    news: [
-      { title: "Chip equipment makers benefit from AI boom", url: "https://www.bloomberg.com" }
+    t:"TSM", name:"TSMC", group:"Foundries", theme:"Leading-edge nodes + advanced packaging capacity",
+    chg:+0.3,
+    aiInsight:"Leading-edge demand strong; CoWoS/advanced packaging capacity expansion is a key bottleneck for AI output.",
+    links:[
+      {title:"Why TSM’s packaging capacity matters for AI scaling (Jan 3, 2026)", src:"Yahoo Finance", url:"https://finance.yahoo.com/news/why-taiwan-semiconductor-manufacturing-holds-151024917.html"},
+      {title:"CoWoS capacity ramp and constraints (Jan 27, 2026)", src:"Wedbush", url:"https://investor.wedbush.com/wedbush/article/tokenring-2026-1-27-the-cowos-stranglehold-tsmc-ramps-advanced-packaging-as-ai-demand-outpaces-the-physics-of-supply"}
     ]
   },
   {
-    t: "ASML",
-    name: "ASML",
-    group: "Equipment",
-    theme: "EUV lithography",
-    chg: 0.9,
-    aiInsight: "EUV demand structurally strong, but shipment timing and geopolitics remain swing factors.",
-    news: [
-      { title: "ASML outlook supported by advanced logic demand", url: "https://www.reuters.com" }
+    t:"ASML", name:"ASML", group:"Equipment", theme:"EUV/High-NA; shipment timing; geopolitics risk",
+    chg:+0.9,
+    aiInsight:"EUV demand is structurally supported by advanced logic/memory; watch bookings volatility and China exposure.",
+    links:[
+      {title:"What 2026 has in store for ASML (Jan 9, 2026)", src:"Forbes", url:"https://www.forbes.com/sites/greatspeculations/2026/01/09/what-2026-has-in-store-for-asml-high-na-euv-dram/"},
+      {title:"ASML EUV demand outlook & memory tailwinds (Jan 28, 2026)", src:"TrendForce", url:"https://www.trendforce.com/news/2026/01/28/news-asml-posts-record-e9-7b-q4-revenue-memory-shortage-reportedly-may-boost-euv-tool-demand/"}
+    ]
+  },
+  {
+    t:"AMAT", name:"Applied Materials", group:"Equipment", theme:"WFE; deposition/etch; packaging-adjacent exposure",
+    chg:+0.5,
+    aiInsight:"AI capex supports leading-edge logic and packaging-related demand; watch memory tool cycle inflections.",
+    links:[
+      {title:"Chipmaker shares gain as AI datacenter demand wave continues (Jan 28, 2026)", src:"Reuters", url:"https://www.reuters.com/business/texas-instruments-shares-jump-first-quarter-outlook-signals-robust-ai-data-2026-01-28/"}
+    ]
+  },
+  {
+    t:"LRCX", name:"Lam Research", group:"Equipment", theme:"Etch/deposition; levered to memory + advanced logic",
+    chg:-0.2,
+    aiInsight:"Memory exposure can add cyclicality; pay attention to HBM-driven DRAM capex and NAND discipline.",
+    links:[
+      {title:"2026 semiconductor industry outlook (Feb 2026)", src:"Deloitte", url:"https://www.deloitte.com/us/en/insights/industry/technology/technology-media-telecom-outlooks/semiconductor-industry-outlook.html"}
+    ]
+  },
+  {
+    t:"MU", name:"Micron", group:"Memory", theme:"HBM + DRAM cycle; multi-sourcing trends",
+    chg:+1.0,
+    aiInsight:"HBM can override classic memory-cycle fears; monitor supply tightness and competitive positioning vs peers.",
+    links:[
+      {title:"Micron run-up and the memory-cycle debate (Feb 2026)", src:"Barron's", url:"https://www.barrons.com/articles/micron-stock-price-memory-chips-e1755fa0"}
+    ]
+  },
+  {
+    t:"ASE", name:"ASE Technology", group:"Packaging", theme:"OSAT; advanced packaging enablement",
+    chg:+0.1,
+    aiInsight:"Backend constraints are increasingly first-order; packaging capacity/tech migration can cap system-level shipments.",
+    links:[
+      {title:"Semiconductors in 2026: AI upswing meets bottlenecks (Feb 2026)", src:"Medium", url:"https://medium.com/@adnanmasood/semiconductors-in-2026-the-ai-driven-upswing-meets-structural-bottlenecks-3568b004905b"}
     ]
   }
 ];
-</script>
-        
-<script>
-const rows = document.getElementById("rows");
-const search = document.getElementById("search");
-const chips = document.querySelectorAll("[data-group]");
-let activeGroup = "All";
-        
-<script>
-function render() {
-  const q = search.value.toLowerCase();
 
-  rows.innerHTML = data
-    .filter(d =>
-      (activeGroup === "All" || d.group === activeGroup) &&
-      (`${d.t} ${d.name} ${d.theme} ${d.aiInsight}`.toLowerCase().includes(q))
-    )
-    .map(d => `
+// Curated “sector pulse” links panel
+const sectorNews = [
+  {
+    src:"Reuters",
+    title:"AI runs on capital: investors reward hardware makers (Feb 6, 2026)",
+    meta:"Semiconductor stocks have surged alongside AI hardware demand; software lagged.",
+    url:"https://www.reuters.com/technology/spacex-nvidia-deals-showing-ai-runs-capital-2026-02-06/"
+  },
+  {
+    src:"Reuters",
+    title:"Chipmakers ride strong AI-driven demand into 2026 (Jan 28, 2026)",
+    meta:"Datacenter wave lifts chip names; watch risks + visibility.",
+    url:"https://www.reuters.com/business/texas-instruments-shares-jump-first-quarter-outlook-signals-robust-ai-data-2026-01-28/"
+  },
+  {
+    src:"Deloitte",
+    title:"2026 Global Semiconductor Industry Outlook (Feb 2026)",
+    meta:"Macro + cycle context; useful for framing themes.",
+    url:"https://www.deloitte.com/us/en/insights/industry/technology/technology-media-telecom-outlooks/semiconductor-industry-outlook.html"
+  },
+  {
+    src:"TrendForce",
+    title:"ASML outlook + EUV demand signals (Jan 28, 2026)",
+    meta:"Backlog and EUV demand, with memory dynamics in focus.",
+    url:"https://www.trendforce.com/news/2026/01/28/news-asml-posts-record-e9-7b-q4-revenue-memory-shortage-reportedly-may-boost-euv-tool-demand/"
+  }
+];
+
+/* ============
+   DOM HOOKS
+   ============ */
+const rowsEl = document.getElementById("rows");
+const qEl = document.getElementById("q");
+const clearBtn = document.getElementById("clearBtn");
+const groupChips = [...document.querySelectorAll("[data-group]")];
+const quickChips = [...document.querySelectorAll("[data-quick]")];
+
+const themeBtn = document.getElementById("themeBtn");
+const insightBtn = document.getElementById("insightBtn");
+const goWatchlistBtn = document.getElementById("goWatchlistBtn");
+const goSectorBtn = document.getElementById("goSectorBtn");
+const simulateBtn = document.getElementById("simulateBtn");
+
+const newsPanel = document.getElementById("newsPanel");
+const asofEl = document.getElementById("asof");
+const yearEl = document.getElementById("year");
+const newsletterForm = document.getElementById("newsletterForm");
+
+let activeGroup = "All";
+
+/* ============
+   HELPERS
+   ============ */
+function smoothTo(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:"smooth"});
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
+}
+
+/* ============
+   RENDER
+   ============ */
+function renderNewsPanel(){
+  newsPanel.innerHTML = sectorNews.map(n => `
+    <div class="news-item">
+      <div class="src">${esc(n.src)}</div>
+      <div class="ttl"><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a></div>
+      <div class="meta">${esc(n.meta)}</div>
+    </div>
+  `).join("");
+}
+
+function renderWatchlist(){
+  const q = (qEl.value || "").trim().toLowerCase();
+
+  const filtered = watchlist.filter(d => {
+    const inGroup = activeGroup === "All" || d.group === activeGroup;
+    const blob = `${d.t} ${d.name} ${d.group} ${d.theme} ${d.aiInsight}`.toLowerCase();
+    const inQuery = !q || blob.includes(q);
+    return inGroup && inQuery;
+  });
+
+  rowsEl.innerHTML = filtered.length ? filtered.map((d, idx) => {
+    const sign = d.chg >= 0 ? "+" : "";
+    const chgCls = d.chg >= 0 ? "up" : "down";
+    const detailId = `detail_${d.t}_${idx}`;
+
+    const linksHtml = (d.links || []).map(l =>
+      `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a> <span class="muted">· ${esc(l.src)}</span></li>`
+    ).join("");
+
+    return `
       <tr>
-        <td><strong>${d.t}</strong></td>
-        <td>${d.name}</td>
-        <td>${d.group}</td>
-        <td>${d.theme}</td>
-        <td style="font-size:13px;">
-          <div><strong>AI:</strong> ${d.aiInsight}</div>
-          <ul style="margin:6px 0 0 16px; padding:0;">
-            ${d.news.map(n => `
-              <li>
-                <a href="${n.url}" target="_blank" style="color:var(--accent);">
-                  ${n.title}
-                </a>
-              </li>
-            `).join("")}
-          </ul>
-        </td>
-        <td class="${d.chg >= 0 ? "up" : "down"}">
-          ${d.chg >= 0 ? "+" : ""}${d.chg}%
+        <td class="ticker">${esc(d.t)}</td>
+        <td>${esc(d.name)}</td>
+        <td><span class="tag">${esc(d.group)}</span></td>
+        <td class="muted">${esc(d.theme)}</td>
+        <td class="chg ${chgCls}">${sign}${Number(d.chg).toFixed(1)}%</td>
+        <td>
+          <button class="rowbtn" data-toggle="${detailId}">View</button>
+          <div class="details" id="${detailId}" style="display:none;">
+            <b>AI insight</b>
+            <div class="muted">${esc(d.aiInsight)}</div>
+            <b style="margin-top:10px;">Relevant news</b>
+            <ul class="newslist">${linksHtml || `<li class="muted">No links yet.</li>`}</ul>
+          </div>
         </td>
       </tr>
-    `).join("");
+    `;
+  }).join("") : `
+    <tr><td colspan="6" class="muted" style="padding:18px;">No matches. Try “HBM”, “EUV”, “CoWoS”, “capex”, “China”.</td></tr>
+  `;
+
+  // bind expand/collapse buttons after render
+  document.querySelectorAll("[data-toggle]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-toggle");
+      const panel = document.getElementById(id);
+      const isOpen = panel && panel.style.display !== "none";
+      if(panel) panel.style.display = isOpen ? "none" : "block";
+      btn.textContent = isOpen ? "View" : "Hide";
+    });
+  });
 }
-</script>
 
+function setActiveChip(group){
+  activeGroup = group;
+  groupChips.forEach(c => c.classList.toggle("active", c.dataset.group === group));
+  renderWatchlist();
+}
 
-chips.forEach(c => {
-  c.onclick = () => {
-    activeGroup = c.dataset.group;
-    chips.forEach(x => x.classList.remove("active"));
-    c.classList.add("active");
-    render();
-  };
+/* ============
+   INTERACTIONS
+   ============ */
+qEl.addEventListener("input", renderWatchlist);
+
+clearBtn.addEventListener("click", () => {
+  qEl.value = "";
+  setActiveChip("All");
+  qEl.focus();
 });
 
-search.oninput = render;
+groupChips.forEach(chip => {
+  chip.addEventListener("click", () => setActiveChip(chip.dataset.group));
+});
 
-document.getElementById("themeBtn").onclick = () =>
-  document.body.classList.toggle("alt-theme");
+quickChips.forEach(chip => {
+  chip.addEventListener("click", () => {
+    qEl.value = chip.dataset.quick || "";
+    renderWatchlist();
+    smoothTo("watchlist");
+    qEl.focus();
+  });
+});
 
-document.getElementById("insightBtn").onclick = () =>
-  document.getElementById("watchlist")
-    .scrollIntoView({ behavior: "smooth" });
+// Smooth scrolling for nav anchors
+document.querySelectorAll("a[href^='#']").forEach(a => {
+  a.addEventListener("click", e => {
+    const href = a.getAttribute("href");
+    const target = href && document.querySelector(href);
+    if(target){
+      e.preventDefault();
+      target.scrollIntoView({behavior:"smooth"});
+    }
+  });
+});
 
-document.getElementById("newsletterForm").onsubmit = e => {
+themeBtn.addEventListener("click", () => document.body.classList.toggle("alt-theme"));
+insightBtn.addEventListener("click", () => smoothTo("watchlist"));
+goWatchlistBtn.addEventListener("click", () => smoothTo("watchlist"));
+goSectorBtn.addEventListener("click", () => smoothTo("sector"));
+
+// Demo “update”: nudges the % and stamps time (no real market data)
+simulateBtn.addEventListener("click", () => {
+  for(const d of watchlist){
+    const nudge = (Math.random() * 1.2 - 0.6); // -0.6..+0.6
+    d.chg = Math.max(-9.9, Math.min(9.9, d.chg + nudge));
+  }
+  asofEl.textContent = new Date().toLocaleString();
+  renderWatchlist();
+});
+
+// Newsletter demo
+newsletterForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const email = document.getElementById("email").value;
-  if (!email.includes("@")) return alert("Enter a valid email");
-  alert("Subscribed (demo)");
-  e.target.reset();
-};
+  const email = document.getElementById("email").value.trim();
+  if(!email.includes("@")){
+    alert("Please enter a valid email.");
+    return;
+  }
+  alert("Subscribed (demo). Connect this form to your backend/email provider when ready.");
+  newsletterForm.reset();
+});
 
-document.getElementById("year").textContent = new Date().getFullYear();
-render();
+/* ============
+   INIT
+   ============ */
+yearEl.textContent = new Date().getFullYear();
+asofEl.textContent = new Date().toLocaleString();
+renderNewsPanel();
+renderWatchlist();
 </script>
-
 </body>
 </html>
