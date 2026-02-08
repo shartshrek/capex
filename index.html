@@ -214,13 +214,56 @@ footer {
 ======================== -->
 <script>
 const data = [
-  { t:"NVDA", name:"NVIDIA", group:"Designers", theme:"AI GPUs, HBM", chg:1.2 },
-  { t:"AMD", name:"AMD", group:"Designers", theme:"AI accelerators", chg:-0.4 },
-  { t:"TSM", name:"TSMC", group:"Foundries", theme:"Leading-edge nodes", chg:0.3 },
-  { t:"INTC", name:"Intel", group:"Foundries", theme:"Foundry buildout", chg:-0.8 },
-  { t:"AMAT", name:"Applied Materials", group:"Equipment", theme:"WFE, deposition", chg:0.5 },
-  { t:"ASML", name:"ASML", group:"Equipment", theme:"EUV lithography", chg:0.9 },
-  { t:"MU", name:"Micron", group:"Memory", theme:"HBM, DRAM", chg:1.0 }
+<script>
+const data = [
+  {
+    t: "NVDA",
+    name: "NVIDIA",
+    group: "Designers",
+    theme: "AI GPUs, HBM",
+    chg: 1.2,
+    aiInsight: "AI datacenter demand remains strong; near-term upside driven by HBM supply and networking attach rates.",
+    news: [
+      { title: "NVIDIA demand driven by hyperscaler AI spend", url: "https://www.reuters.com" },
+      { title: "HBM supply chain tightens amid AI boom", url: "https://www.bloomberg.com" }
+    ]
+  },
+  {
+    t: "TSM",
+    name: "TSMC",
+    group: "Foundries",
+    theme: "Leading-edge nodes",
+    chg: 0.3,
+    aiInsight: "Advanced node utilization improving; CoWoS capacity remains a key bottleneck for AI accelerators.",
+    news: [
+      { title: "TSMC sees stronger advanced-node demand", url: "https://www.reuters.com" },
+      { title: "Packaging capacity limits AI chip output", url: "https://www.wsj.com" }
+    ]
+  },
+  {
+    t: "AMAT",
+    name: "Applied Materials",
+    group: "Equipment",
+    theme: "WFE, deposition",
+    chg: 0.5,
+    aiInsight: "Logic and advanced packaging orders offset memory tool softness; AI capex remains supportive.",
+    news: [
+      { title: "Chip equipment makers benefit from AI boom", url: "https://www.bloomberg.com" }
+    ]
+  },
+  {
+    t: "ASML",
+    name: "ASML",
+    group: "Equipment",
+    theme: "EUV lithography",
+    chg: 0.9,
+    aiInsight: "EUV demand structurally strong, but shipment timing and geopolitics remain swing factors.",
+    news: [
+      { title: "ASML outlook supported by advanced logic demand", url: "https://www.reuters.com" }
+    ]
+  }
+];
+</script>
 ];
 
 const rows = document.getElementById("rows");
