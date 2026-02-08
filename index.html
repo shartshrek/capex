@@ -175,11 +175,17 @@ footer {
   </div>
 
   <table>
-    <thead>
-      <tr>
-        <th>Ticker</th><th>Company</th><th>Group</th><th>Theme</th><th>1D</th>
-      </tr>
-    </thead>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Company</th>
+            <th>Group</th>
+            <th>Theme</th>
+            <th>AI Insight & News</th>
+            <th>1D</th>
+          </tr>
+        </thead>
+
     <tbody id="rows"></tbody>
   </table>
 </section>
@@ -264,19 +270,21 @@ const data = [
   }
 ];
 </script>
-];
-
+        
+<script>
 const rows = document.getElementById("rows");
 const search = document.getElementById("search");
 const chips = document.querySelectorAll("[data-group]");
 let activeGroup = "All";
-
+        
+<script>
 function render() {
   const q = search.value.toLowerCase();
+
   rows.innerHTML = data
     .filter(d =>
       (activeGroup === "All" || d.group === activeGroup) &&
-      (`${d.t} ${d.name} ${d.theme}`.toLowerCase().includes(q))
+      (`${d.t} ${d.name} ${d.theme} ${d.aiInsight}`.toLowerCase().includes(q))
     )
     .map(d => `
       <tr>
@@ -284,12 +292,26 @@ function render() {
         <td>${d.name}</td>
         <td>${d.group}</td>
         <td>${d.theme}</td>
+        <td style="font-size:13px;">
+          <div><strong>AI:</strong> ${d.aiInsight}</div>
+          <ul style="margin:6px 0 0 16px; padding:0;">
+            ${d.news.map(n => `
+              <li>
+                <a href="${n.url}" target="_blank" style="color:var(--accent);">
+                  ${n.title}
+                </a>
+              </li>
+            `).join("")}
+          </ul>
+        </td>
         <td class="${d.chg >= 0 ? "up" : "down"}">
           ${d.chg >= 0 ? "+" : ""}${d.chg}%
         </td>
       </tr>
     `).join("");
 }
+</script>
+
 
 chips.forEach(c => {
   c.onclick = () => {
