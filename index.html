@@ -170,6 +170,41 @@
     color:rgba(255,255,255,.55);font-size:13px;
     display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;
   }
+
+  /* FULL-WIDTH EXPANDED INSIGHT ROW */
+.expand-row td {
+  padding: 0;
+  border-bottom: none;
+}
+
+.expand-panel {
+  width: 100%;
+  padding: 18px 20px;
+  border-top: 1px solid var(--line);
+  background: rgba(0,0,0,.35);
+}
+
+.expand-panel b {
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.expand-panel .ai-text {
+  font-size: 15px;
+  line-height: 1.55;
+  max-width: 95ch;
+}
+
+.expand-panel .newslist {
+  margin-top: 10px;
+}
+
+.expand-panel .newslist li {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
 </style>
 </head>
 
@@ -501,15 +536,23 @@ function renderWatchlist(){
         <td class="muted">${esc(d.theme)}</td>
         <td class="chg ${chgCls}">${sign}${Number(d.chg).toFixed(1)}%</td>
         <td>
-          <button class="rowbtn" data-toggle="${detailId}">View</button>
-          <div class="details" id="${detailId}" style="display:none;">
-            <b>AI insight</b>
-            <div class="muted">${esc(d.aiInsight)}</div>
-            <b style="margin-top:10px;">Relevant news</b>
-            <ul class="newslist">${linksHtml || `<li class="muted">No links yet.</li>`}</ul>
-          </div>
-        </td>
-      </tr>
+  <button class="rowbtn" data-toggle="${detailId}">View</button>
+</td>
+</tr>
+
+<tr class="expand-row" id="${detailId}" style="display:none;">
+  <td colspan="6">
+    <div class="expand-panel">
+      <b>AI insight</b>
+      <div class="ai-text muted">${esc(d.aiInsight)}</div>
+
+      <b style="margin-top:12px;">Relevant news</b>
+      <ul class="newslist">
+        ${linksHtml || `<li class="muted">No links yet.</li>`}
+      </ul>
+    </div>
+  </td>
+</tr>
     `;
   }).join("") : `
     <tr><td colspan="6" class="muted" style="padding:18px;">No matches. Try “HBM”, “EUV”, “CoWoS”, “capex”, “China”.</td></tr>
@@ -518,8 +561,11 @@ function renderWatchlist(){
   // bind expand/collapse buttons after render
   document.querySelectorAll("[data-toggle]").forEach(btn => {
     btn.addEventListener("click", () => {
-      const id = btn.getAttribute("data-toggle");
       const panel = document.getElementById(id);
+      const isOpen = panel && panel.style.display === "table-row";
+      panel.style.display = isOpen ? "none" : "table-row";
+      btn.textContent = isOpen ? "View" : "Hide";
+
       const isOpen = panel && panel.style.display !== "none";
       if(panel) panel.style.display = isOpen ? "none" : "block";
       btn.textContent = isOpen ? "View" : "Hide";
