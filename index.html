@@ -1,629 +1,282 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SemiPulse — Semiconductor Stock Insights</title>
-  <meta name="description" content="Insights, catalysts, and watchlists for semiconductor-related stocks: designers, foundries, equipment, and memory." />
-  <style>
-    :root{
-      --bg: #0b1220;
-      --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.08);
-      --text: rgba(255,255,255,.9);
-      --muted: rgba(255,255,255,.68);
-      --line: rgba(255,255,255,.12);
-      --accent: #7c9cff;
-      --accent2: #3ce6c2;
-      --danger: #ff6b6b;
-      --warning: #ffd166;
-      --ok: #6cf2a9;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 16px;
-      --radius2: 22px;
-      --max: 1140px;
-    }
-    *{ box-sizing: border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color: var(--text);
-      background:
-        radial-gradient(1200px 700px at 15% 10%, rgba(124,156,255,.22), transparent 55%),
-        radial-gradient(900px 600px at 85% 20%, rgba(60,230,194,.18), transparent 55%),
-        radial-gradient(700px 500px at 50% 95%, rgba(255,209,102,.10), transparent 55%),
-        var(--bg);
-      line-height:1.45;
-    }
-    a{ color: inherit; text-decoration: none; }
-    .wrap{ max-width: var(--max); margin: 0 auto; padding: 24px; }
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:16px;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.18);
-      backdrop-filter: blur(10px);
-      border-radius: 999px;
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 14px;
-      z-index: 5;
-    }
-    .brand{ display:flex; align-items:center; gap:10px; font-weight: 700; letter-spacing:.2px; }
-    .logo{
-      width: 34px; height: 34px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display:grid; place-items:center;
-      box-shadow: 0 10px 24px rgba(124,156,255,.25);
-      position: relative;
-      overflow:hidden;
-    }
-    .logo:before{
-      content:"";
-      position:absolute; inset:-30%;
-      background: repeating-linear-gradient(90deg, rgba(255,255,255,.25) 0 2px, transparent 2px 7px);
-      transform: rotate(10deg);
-      opacity:.25;
-    }
-    .logo svg{ position:relative; }
-    .nav{
-      display:flex; gap:14px; align-items:center; flex-wrap:wrap;
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .nav a{ padding: 8px 10px; border-radius: 999px; }
-    .nav a:hover{ background: rgba(255,255,255,.06); color: var(--text); }
-    .btn{
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      padding: 9px 12px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor:pointer;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      display:inline-flex; gap:8px; align-items:center;
-    }
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18); }
-    .btn.primary{
-      border-color: rgba(124,156,255,.55);
-      background: linear-gradient(135deg, rgba(124,156,255,.28), rgba(60,230,194,.18));
-    }
-    .hero{
-      margin-top: 22px;
-      display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap: 18px;
-      align-items: stretch;
-    }
-    @media (max-width: 980px){
-      .hero{ grid-template-columns: 1fr; }
-      .topbar{ border-radius: 22px; }
-    }
-    .card{
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.06);
-      border-radius: var(--radius2);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .card .inner{ padding: 22px; }
-    .kicker{
-      color: var(--muted);
-      font-weight: 700;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      font-size: 12px;
-    }
-    h1{
-      margin: 10px 0 10px;
-      font-size: clamp(28px, 3.5vw, 44px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-    }
-    .sub{
-      color: var(--muted);
-      font-size: 16px;
-      max-width: 58ch;
-    }
-    .hero-actions{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top: 16px;
-    }
-    .pillrow{
-      margin-top: 16px;
-      display:flex; gap:10px; flex-wrap:wrap;
-    }
-    .pill{
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.12);
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      color: var(--muted);
-      display:flex; align-items:center; gap:8px;
-    }
-    .dot{ width:8px; height:8px; border-radius:99px; background: var(--accent2); opacity:.9; }
-    .grid{
-      margin-top: 18px;
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 18px;
-    }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-    }
-    .section-title{
-      display:flex; align-items:baseline; justify-content:space-between;
-      gap:10px;
-      margin-bottom: 10px;
-    }
-    .section-title h2{
-      margin:0;
-      font-size: 18px;
-      letter-spacing: -0.01em;
-    }
-    .section-title .hint{ color: var(--muted); font-size: 13px; }
-    .table{
-      width:100%;
-      border-collapse: collapse;
-      overflow:hidden;
-      border-radius: var(--radius);
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.12);
-    }
-    .table th, .table td{
-      padding: 12px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      text-align:left;
-      font-size: 14px;
-      vertical-align: middle;
-    }
-    .table th{
-      color: rgba(255,255,255,.75);
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      background: rgba(255,255,255,.04);
-    }
-    .ticker{
-      font-weight: 900;
-      letter-spacing: .02em;
-    }
-    .tag{
-      display:inline-flex; align-items:center; gap:6px;
-      padding: 5px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      font-size: 12px;
-      color: rgba(255,255,255,.78);
-      white-space: nowrap;
-    }
-    .chg{ font-weight: 900; }
-    .up{ color: var(--ok); }
-    .down{ color: var(--danger); }
-    .muted{ color: var(--muted); }
-    .searchRow{
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin: 10px 0 12px;
-    }
-    .input{
-      flex: 1;
-      min-width: 240px;
-      padding: 11px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.16);
-      color: var(--text);
-      outline: none;
-    }
-    .input::placeholder{ color: rgba(255,255,255,.45); }
-    .chips{ display:flex; gap:8px; flex-wrap:wrap; }
-    .chip{
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.05);
-      color: var(--muted);
-      cursor:pointer;
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: .02em;
-      user-select:none;
-    }
-    .chip.active{
-      color: var(--text);
-      border-color: rgba(124,156,255,.55);
-      background: rgba(124,156,255,.18);
-    }
-    .list{
-      display:grid;
-      gap: 10px;
-    }
-    .row{
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,.12);
-      border-radius: var(--radius);
-      padding: 12px;
-      display:flex;
-      justify-content:space-between;
-      gap: 12px;
-      align-items:flex-start;
-    }
-    .row b{ display:block; margin-bottom: 2px; }
-    .row p{ margin:0; color: var(--muted); font-size: 13px; }
-    .badge{
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-weight: 900;
-      font-size: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      white-space: nowrap;
-    }
-    .badge.warn{ border-color: rgba(255,209,102,.35); background: rgba(255,209,102,.12); }
-    .badge.ok{ border-color: rgba(108,242,169,.35); background: rgba(108,242,169,.10); }
-    .badge.hot{ border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.10); }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SemiPulse — Semiconductor Stock Insights</title>
 
-    .footer{
-      margin: 28px 0 20px;
-      color: rgba(255,255,255,.55);
-      font-size: 13px;
-      display:flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items:center;
-    }
-    .fine{ color: rgba(255,255,255,.5); max-width: 80ch; }
-    .spark{
-      height: 120px;
-      width: 100%;
-      display:block;
-      background: linear-gradient(180deg, rgba(124,156,255,.20), transparent 65%);
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      position: relative;
-      overflow:hidden;
-    }
-    .spark svg{
-      position:absolute; inset: 0;
-      opacity:.9;
-    }
-  </style>
+<!-- =======================
+        CSS (INLINE)
+======================== -->
+<style>
+:root {
+  --bg: #0b1220;
+  --panel: rgba(255,255,255,.06);
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.65);
+  --line: rgba(255,255,255,.12);
+  --accent: #7c9cff;
+  --accent2: #3ce6c2;
+  --up: #6cf2a9;
+  --down: #ff6b6b;
+  --radius: 16px;
+}
+
+.alt-theme {
+  --bg: #05070f;
+  --accent: #a78bfa;
+  --accent2: #22d3ee;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a { color: inherit; text-decoration: none; }
+
+.wrap {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(0,0,0,.2);
+}
+
+nav a {
+  margin-right: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+nav a:hover { color: var(--text); }
+
+button {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  color: black;
+}
+
+section {
+  margin-top: 22px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+h1, h2 { margin-top: 0; }
+
+input {
+  padding: 10px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(0,0,0,.2);
+  color: var(--text);
+}
+
+.chips span {
+  display: inline-block;
+  margin: 4px 6px 0 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.chips span.active {
+  background: var(--accent);
+  color: black;
+  border: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.up { color: var(--up); font-weight: 800; }
+.down { color: var(--down); font-weight: 800; }
+
+footer {
+  margin: 30px 0;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M7 7h10v10H7z" stroke="white" stroke-width="2" opacity=".9"/>
-            <path d="M4 10V7a3 3 0 0 1 3-3h3" stroke="white" stroke-width="2" opacity=".9"/>
-            <path d="M20 14v3a3 3 0 0 1-3 3h-3" stroke="white" stroke-width="2" opacity=".9"/>
-          </svg>
-        </div>
-        <div>
-          SemiPulse <span class="muted" style="font-weight:800;">· insights</span>
-        </div>
-      </div>
+<header>
+  <strong>SemiPulse</strong>
+  <nav>
+    <a href="#watchlist">Watchlist</a>
+    <a href="#catalysts">Catalysts</a>
+    <a href="#newsletter">Newsletter</a>
+  </nav>
+  <div>
+    <button id="themeBtn">Theme</button>
+    <button class="primary" id="insightBtn">Get insights</button>
+  </div>
+</header>
 
-      <nav class="nav" aria-label="Primary">
-        <a href="#watchlist">Watchlist</a>
-        <a href="#catalysts">Catalysts</a>
-        <a href="#earnings">Earnings</a>
-        <a href="#newsletter">Newsletter</a>
-      </nav>
+<section>
+  <h1>Semiconductor Stock Intelligence</h1>
+  <p class="muted">
+    Designers, foundries, equipment, memory — filtered for AI & capex cycles.
+  </p>
+</section>
 
-      <div style="display:flex; gap:10px; align-items:center;">
-        <button class="btn" id="themeBtn" title="Toggle contrast">
-          <span aria-hidden="true">◐</span> Theme
-        </button>
-        <a class="btn primary" href="#watchlist">
-          Get insights <span aria-hidden="true">→</span>
-        </a>
-      </div>
-    </header>
+<section id="watchlist">
+  <h2>Watchlist</h2>
 
-    <section class="hero">
-      <div class="card">
-        <div class="spark" aria-hidden="true">
-          <svg viewBox="0 0 1200 220" preserveAspectRatio="none">
-            <path d="M0,160 C120,120 240,200 360,150 C480,100 600,170 720,130 C840,90 960,150 1080,110 C1140,92 1170,90 1200,100 L1200,220 L0,220 Z"
-              fill="rgba(255,255,255,.08)"></path>
-            <path d="M0,150 C120,110 240,190 360,140 C480,90 600,160 720,120 C840,80 960,140 1080,100 C1140,82 1170,80 1200,90"
-              stroke="rgba(255,255,255,.35)" stroke-width="3" fill="none"></path>
-          </svg>
-        </div>
+  <input id="search" placeholder="Search: AI, HBM, EUV, China, packaging…" />
 
-        <div class="inner">
-          <div class="kicker">Semiconductor stock intelligence</div>
-          <h1>Track the chips cycle with signals that matter.</h1>
-          <p class="sub">
-            Watch designers, foundries, equipment, and memory in one place—earnings, catalysts, valuation snapshots,
-            and “what changed” notes built for fast decision-making.
-          </p>
-
-          <div class="hero-actions">
-            <a class="btn primary" href="#watchlist">Explore watchlist →</a>
-            <a class="btn" href="#newsletter">Subscribe for weekly notes</a>
-            <a class="btn" href="#catalysts">View catalysts</a>
-          </div>
-
-          <div class="pillrow" role="list" aria-label="Highlights">
-            <div class="pill" role="listitem"><span class="dot"></span> AI Capex pulse</div>
-            <div class="pill" role="listitem"><span class="dot" style="background:var(--accent);"></span> Foundry capacity & nodes</div>
-            <div class="pill" role="listitem"><span class="dot" style="background:var(--warning);"></span> Earnings & guidance diffs</div>
-            <div class="pill" role="listitem"><span class="dot" style="background:var(--ok);"></span> Equipment order signals</div>
-          </div>
-        </div>
-      </div>
-
-      <aside class="card">
-        <div class="inner">
-          <div class="section-title">
-            <h2>Sector Pulse</h2>
-            <span class="hint">Demo data</span>
-          </div>
-          <div class="list" style="margin-top:10px;">
-            <div class="row">
-              <div>
-                <b>AI / Datacenter demand</b>
-                <p>Strong orders driving GPUs, HBM, advanced packaging.</p>
-              </div>
-              <span class="badge hot">Hot</span>
-            </div>
-            <div class="row">
-              <div>
-                <b>Memory pricing</b>
-                <p>HBM tight; DRAM/NAND cycle improving unevenly.</p>
-              </div>
-              <span class="badge warn">Watch</span>
-            </div>
-            <div class="row">
-              <div>
-                <b>Equipment lead-times</b>
-                <p>Mixed—critical tools remain constrained in pockets.</p>
-              </div>
-              <span class="badge ok">OK</span>
-            </div>
-          </div>
-
-          <div style="margin-top:14px; border-top:1px solid var(--line); padding-top:14px;">
-            <div class="muted" style="font-weight:800; font-size:13px; margin-bottom:8px;">
-              Quick links
-            </div>
-            <div class="chips">
-              <span class="chip active" data-quick="AI">AI Capex</span>
-              <span class="chip" data-quick="HBM">HBM</span>
-              <span class="chip" data-quick="TSMC">Foundries</span>
-              <span class="chip" data-quick="EUV">EUV / Litho</span>
-              <span class="chip" data-quick="China">China exposure</span>
-            </div>
-            <p class="muted" style="margin:10px 0 0; font-size:12px;">
-              Tip: click a chip to prefill search in the watchlist.
-            </p>
-          </div>
-        </div>
-      </aside>
-    </section>
-
-    <section class="grid">
-      <div class="card" id="watchlist">
-        <div class="inner">
-          <div class="section-title">
-            <h2>Watchlist</h2>
-            <span class="hint">Filter by keyword or group</span>
-          </div>
-
-          <div class="searchRow">
-            <input class="input" id="q" placeholder="Search tickers, subsectors, themes (e.g., HBM, EUV, packaging, China)..." />
-            <button class="btn" id="clearBtn">Clear</button>
-          </div>
-
-          <div class="chips" style="margin-bottom:12px;">
-            <span class="chip active" data-group="All">All</span>
-            <span class="chip" data-group="Designers">Designers</span>
-            <span class="chip" data-group="Foundries">Foundries</span>
-            <span class="chip" data-group="Equipment">Equipment</span>
-            <span class="chip" data-group="Memory">Memory</span>
-            <span class="chip" data-group="Packaging">Packaging</span>
-          </div>
-
-          <table class="table" aria-label="Semiconductor watchlist table">
-            <thead>
-              <tr>
-                <th>Ticker</th>
-                <th>Company</th>
-                <th>Group</th>
-                <th>Theme</th>
-                <th>1D</th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
-
-          <p class="fine" style="margin-top:10px;">
-            Note: Prices/changes here are placeholders. Wire this table to your backend (or a market data API) when ready.
-          </p>
-        </div>
-      </div>
-
-      <div class="card" id="catalysts">
-        <div class="inner">
-          <div class="section-title">
-            <h2>Catalysts</h2>
-            <span class="hint">What to watch next</span>
-          </div>
-
-          <div class="list" style="margin-top:10px;">
-            <div class="row">
-              <div>
-                <b>Big Tech capex updates</b>
-                <p>Track AI datacenter guidance changes and supplier read-through.</p>
-              </div>
-              <span class="badge hot">Weekly</span>
-            </div>
-            <div class="row">
-              <div>
-                <b>Foundry utilization & node mix</b>
-                <p>Advanced node ramp vs. mature node softness impacts equipment cadence.</p>
-              </div>
-              <span class="badge warn">Monthly</span>
-            </div>
-            <div class="row">
-              <div>
-                <b>HBM / CoWoS capacity headlines</b>
-                <p>Packaging bottlenecks can cap GPU shipment growth.</p>
-              </div>
-              <span class="badge warn">Anytime</span>
-            </div>
-            <div class="row">
-              <div>
-                <b>Export controls / geopolitics</b>
-                <p>Watch restrictions, licenses, and China demand patterns.</p>
-              </div>
-              <span class="badge warn">Event</span>
-            </div>
-          </div>
-
-          <div style="margin-top:14px; border-top:1px solid var(--line); padding-top:14px;" id="earnings">
-            <div class="section-title">
-              <h2>Earnings Calendar</h2>
-              <span class="hint">Demo schedule</span>
-            </div>
-            <div class="list">
-              <div class="row">
-                <div>
-                  <b>NVDA — Earnings</b>
-                  <p>Watch: guidance, supply constraints, networking attach.</p>
-                </div>
-                <span class="badge">TBD</span>
-              </div>
-              <div class="row">
-                <div>
-                  <b>TSM — Monthly revenue</b>
-                  <p>Node mix + utilization gives early cycle signals.</p>
-                </div>
-                <span class="badge">Monthly</span>
-              </div>
-              <div class="row">
-                <div>
-                  <b>AMAT / LRCX / ASML — Orders</b>
-                  <p>Look for inflections in logic vs memory capex.</p>
-                </div>
-                <span class="badge">Quarterly</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card" id="newsletter" style="margin-top:18px;">
-      <div class="inner" style="display:flex; gap:18px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
-        <div style="min-width: 260px;">
-          <div class="kicker">Weekly digest</div>
-          <h2 style="margin:8px 0 6px; font-size: 22px;">Get the “what changed” notes every Friday.</h2>
-          <p class="muted" style="margin:0; max-width: 75ch;">
-            A short email: capex deltas, supplier read-through, and 3 charts worth your time.
-          </p>
-        </div>
-
-        <form onsubmit="event.preventDefault(); alert('Demo: connect this form to your email provider or backend.');"
-              style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-          <input class="input" type="email" required placeholder="you@example.com" aria-label="Email address" style="min-width: 260px;">
-          <button class="btn primary" type="submit">Subscribe</button>
-        </form>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <div>© <span id="year"></span> SemiPulse</div>
-      <div class="fine">
-        Educational content only. Not investment advice. Market data shown may be delayed or simulated.
-      </div>
-    </footer>
-
+  <div class="chips" id="groupChips">
+    <span class="active" data-group="All">All</span>
+    <span data-group="Designers">Designers</span>
+    <span data-group="Foundries">Foundries</span>
+    <span data-group="Equipment">Equipment</span>
+    <span data-group="Memory">Memory</span>
   </div>
 
-  <script>
-    const data = [
-      { t:"NVDA", name:"NVIDIA", group:"Designers", theme:"AI accelerators, networking", chg:+1.2 },
-      { t:"AMD",  name:"AMD", group:"Designers", theme:"AI GPUs, CPUs, consoles", chg:-0.4 },
-      { t:"AVGO", name:"Broadcom", group:"Designers", theme:"AI networking, custom silicon", chg:+0.6 },
-      { t:"QCOM", name:"Qualcomm", group:"Designers", theme:"Edge AI, mobile, automotive", chg:+0.1 },
+  <table>
+    <thead>
+      <tr>
+        <th>Ticker</th><th>Company</th><th>Group</th><th>Theme</th><th>1D</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</section>
 
-      { t:"TSM",  name:"TSMC", group:"Foundries", theme:"Leading-edge nodes, CoWoS ecosystem", chg:+0.3 },
-      { t:"INTC", name:"Intel", group:"Foundries", theme:"Foundry buildout, CPUs", chg:-0.8 },
+<section id="catalysts">
+  <h2>Catalysts</h2>
+  <ul>
+    <li>AI datacenter capex guidance</li>
+    <li>HBM & advanced packaging capacity</li>
+    <li>Foundry utilization and node mix</li>
+    <li>Export controls & China exposure</li>
+  </ul>
+</section>
 
-      { t:"AMAT", name:"Applied Materials", group:"Equipment", theme:"WFE, deposition/etch", chg:+0.5 },
-      { t:"LRCX", name:"Lam Research", group:"Equipment", theme:"Etch/deposition, memory leverage", chg:-0.2 },
-      { t:"ASML", name:"ASML", group:"Equipment", theme:"EUV lithography", chg:+0.9 },
-      { t:"KLAC", name:"KLA", group:"Equipment", theme:"Inspection & metrology", chg:+0.4 },
+<section id="newsletter">
+  <h2>Weekly AI Capex Notes</h2>
+  <form id="newsletterForm">
+    <input id="email" placeholder="you@email.com" />
+    <br><br>
+    <button class="primary">Subscribe</button>
+  </form>
+</section>
 
-      { t:"MU",   name:"Micron", group:"Memory", theme:"HBM, DRAM/NAND cycle", chg:+1.0 },
-      { t:"WDC",  name:"Western Digital", group:"Memory", theme:"Storage cycle", chg:-0.3 },
+<footer>
+  © <span id="year"></span> SemiPulse · Educational use only
+</footer>
 
-      { t:"UMC",  name:"UMC", group:"Foundries", theme:"Mature nodes", chg:+0.2 },
-      { t:"ASE",  name:"ASE Technology", group:"Packaging", theme:"OSAT, advanced packaging", chg:+0.1 }
-    ];
+</div>
 
-    const rowsEl = document.getElementById("rows");
-    const qEl = document.getElementById("q");
-    const yearEl = document.getElementById("year");
-    const clearBtn = document.getElementById("clearBtn");
-    const groupChips = [...document.querySelectorAll('[data-group]')];
-    const quickChips = [...document.querySelectorAll('[data-quick]')];
-    const themeBtn = document.getElementById("themeBtn");
+<!-- =======================
+        JAVASCRIPT
+======================== -->
+<script>
+const data = [
+  { t:"NVDA", name:"NVIDIA", group:"Designers", theme:"AI GPUs, HBM", chg:1.2 },
+  { t:"AMD", name:"AMD", group:"Designers", theme:"AI accelerators", chg:-0.4 },
+  { t:"TSM", name:"TSMC", group:"Foundries", theme:"Leading-edge nodes", chg:0.3 },
+  { t:"INTC", name:"Intel", group:"Foundries", theme:"Foundry buildout", chg:-0.8 },
+  { t:"AMAT", name:"Applied Materials", group:"Equipment", theme:"WFE, deposition", chg:0.5 },
+  { t:"ASML", name:"ASML", group:"Equipment", theme:"EUV lithography", chg:0.9 },
+  { t:"MU", name:"Micron", group:"Memory", theme:"HBM, DRAM", chg:1.0 }
+];
 
-    let activeGroup = "All";
+const rows = document.getElementById("rows");
+const search = document.getElementById("search");
+const chips = document.querySelectorAll("[data-group]");
+let activeGroup = "All";
 
-    function render(){
-      const q = (qEl.value || "").trim().toLowerCase();
-      const filtered = data.filter(d => {
-        const inGroup = activeGroup === "All" || d.group === activeGroup;
-        const blob = (d.t + " " + d.name + " " + d.group + " " + d.theme).toLowerCase();
-        const inQuery = !q || blob.includes(q);
-        return inGroup && inQuery;
-      });
+function render() {
+  const q = search.value.toLowerCase();
+  rows.innerHTML = data
+    .filter(d =>
+      (activeGroup === "All" || d.group === activeGroup) &&
+      (`${d.t} ${d.name} ${d.theme}`.toLowerCase().includes(q))
+    )
+    .map(d => `
+      <tr>
+        <td><strong>${d.t}</strong></td>
+        <td>${d.name}</td>
+        <td>${d.group}</td>
+        <td>${d.theme}</td>
+        <td class="${d.chg >= 0 ? "up" : "down"}">
+          ${d.chg >= 0 ? "+" : ""}${d.chg}%
+        </td>
+      </tr>
+    `).join("");
+}
 
-      rowsEl.innerHTML = filtered.map(d => {
-        const cls = d.chg >= 0 ? "up" : "down";
-        const sign = d.chg >= 0 ? "+" : "";
-        return `
-          <tr>
-            <td class="ticker">${d.t}</td>
-            <td>${d.name}</td>
-            <td><span class="tag">${d.group}</span></td>
-            <td class="muted">${d.theme}</td>
-            <td class="chg ${cls}">${sign}${d.chg.toFixed(1)}%</td>
-          </tr>
-        `;
-      }).join("");
+chips.forEach(c => {
+  c.onclick = () => {
+    activeGroup = c.dataset.group;
+    chips.forEach(x => x.classList.remove("active"));
+    c.classList.add("active");
+    render();
+  };
+});
 
-      if(!filtered.length){
-        rowsEl.innerHTML = `
-          <tr>
-            <td colspan="5" class="muted" style="padding: 18px;">
-              No matches. Try a different keyword (e.g., "HBM", "EUV", "China", "packaging").
-            </td>
-          </tr>
-        `;
-      }
-    }
+search.oninput = render;
 
-    function setActiveChip(chips, predicate){
-      chips.forEach(c => c.classList.toggle("active", predicate(c)));
-    }
+document.getElementById("themeBtn").onclick = () =>
+  document.body.classList.toggle("alt-theme");
 
-    qEl.addEventListener("input", render);
+document.getElementById("insightBtn").onclick = () =>
+  document.getElementById("watchlist")
+    .scrollIntoView({ behavior: "smooth" });
 
-    clearBtn.addEventLis
+document.getElementById("newsletterForm").onsubmit = e => {
+  e.preventDefault();
+  const email = document.getElementById("email").value;
+  if (!email.includes("@")) return alert("Enter a valid email");
+  alert("Subscribed (demo)");
+  e.target.reset();
+};
+
+document.getElementById("year").textContent = new Date().getFullYear();
+render();
+</script>
+
+</body>
+</html>
